@@ -2,6 +2,8 @@ package com.suu.service.profileservice.service.impl;
 
 import com.suu.service.profileservice.dto.AuthenticationRequest;
 import com.suu.service.profileservice.dto.User;
+import com.suu.service.profileservice.exception.NotFoundException;
+import com.suu.service.profileservice.exception.UnauthorizedException;
 import com.suu.service.profileservice.mapper.UserMapper;
 import com.suu.service.profileservice.repository.UserRepository;
 import com.suu.service.profileservice.service.UserService;
@@ -27,5 +29,12 @@ public class DefaultUserService implements UserService {
     public String getToken(AuthenticationRequest authenticationRequest) {
         final var user = userRepository.findByEmail(authenticationRequest.getEmail());
         return null;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        final var user = userRepository.findByEmail(email)
+                .orElseThrow(()->new NotFoundException("User not fount"));
+        return userMapper.toDto(userRepository.save(user));
     }
 }
