@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: profile-service
+server:
+  port: 8082
+# MinIO configuration
+minio:
+  url: http://localhost:9000
+  access-key: ROOTNAME
+  secret-key: CHANGEME123
+  bucket-name: profile-pictures
