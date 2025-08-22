@@ -4,10 +4,12 @@ import com.suu.service.matchingengine.service.MatchingService;
 import com.suu.service.matchingengine.feign.client.ProfileServiceClient;
 import com.suu.service.profile.dto.MatchSearchQuery;
 import com.suu.service.profile.dto.UserProfile;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -16,7 +18,12 @@ public class MatchingServiceImpl implements MatchingService {
     private ProfileServiceClient profileServiceClient;
     @Override
     public List<UserProfile> getMatchingProfiles(Long userId, int pageSize, int offset) {
-        final ResponseEntity<UserProfile> resp = profileServiceClient.getUserProfileService(userId);
+        final ResponseEntity<UserProfile> resp;
+        try {
+            resp = profileServiceClient.getUserProfileService(userId);
+        } catch (FeignException.NotFound e) {
+            return new ArrayList<>();
+        }
         if(!resp.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException();
         }
